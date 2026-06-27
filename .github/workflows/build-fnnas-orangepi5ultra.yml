@@ -1,5 +1,8 @@
 name: Build FnNAS Orange Pi 5 Ultra
 
+env:
+  DEFAULT_BASE_IMAGE_URL: "https://iso.liveupdate.fnnas.com/arm/trim/1.1.31/rock-5b/fnos_Mainland-PE_arm_1.1.31_rock-5b_1353.img.gz"
+
 on:
   push:
     branches:
@@ -11,7 +14,7 @@ on:
   workflow_dispatch:
     inputs:
       base_image_url:
-        description: "Optional direct URL for the official FnNAS ARM64 .img or .img.xz base image"
+        description: "Optional direct URL for the official FnNAS ARM64 .img, .img.gz, or .img.xz base image"
         required: false
         type: string
       kernel_ref:
@@ -62,16 +65,34 @@ jobs:
           sudo apt install -y $(cat work/fnnas/make-fnnas/script/ubuntu2404-make-fnnas-depends)
 
       - name: Download FnNAS ARM64 base image
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.base_image_url != '' }}
+        env:
+          REQUESTED_BASE_IMAGE_URL: ${{ github.event_name == 'workflow_dispatch' && inputs.base_image_url || '' }}
         run: |
+          base_image_url="${REQUESTED_BASE_IMAGE_URL:-${DEFAULT_BASE_IMAGE_URL}}"
           mkdir -p work/fnnas/fnnas-arm64
-          filename="$(basename "${{ inputs.base_image_url }}")"
-          wget -O "work/fnnas/fnnas-arm64/${filename}" "${{ inputs.base_image_url }}"
+          filename="$(basename "${base_image_url}")"
+          wget -O "work/fnnas/fnnas-arm64/${filename}" "${base_image_url}"
+          case "${filename}" in
+            *.img.gz)
+              gunzip -f "work/fnnas/fnnas-arm64/${filename}"
+              ;;
+            *.img.xz)
+              xz -d -f "work/fnnas/fnnas-arm64/${filename}"
+              ;;
+            *.img)
+              ;;
+            *)
+              echo "Unsupported base image extension: ${filename}" >&2
+              exit 1
+              ;;
+          esac
+          ls -lh work/fnnas/fnnas-arm64
 
       - name: Package FnNAS image
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.base_image_url != '' }}
         working-directory: work/fnnas
-        run: sudo ./renas -b orange-pi-5-ultra -k "${{ inputs.kernel_tag }}"
+        env:
+          PACKAGE_KERNEL_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.kernel_tag || '6.18.y' }}
+        run: sudo ./renas -b orange-pi-5-ultra -k "${PACKAGE_KERNEL_TAG}"
 
       - name: List generated files
         if: always()
@@ -92,7 +113,6 @@ jobs:
           if-no-files-found: warn
 
       - name: Upload packaged FnNAS image
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.base_image_url != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: fnnas-orangepi-5-ultra-image

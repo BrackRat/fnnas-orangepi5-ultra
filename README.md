@@ -188,13 +188,18 @@ The workflow in `.github/workflows/build-fnnas-orangepi5ultra.yml` can:
 
 1. Build the Orange Pi 5 Ultra DTB.
 2. Clone and patch the FnNAS packaging tree.
-3. Optionally download a base image from a manually supplied URL.
-4. Optionally run `sudo ./renas -b orange-pi-5-ultra -k 6.18.y`.
+3. Download an official FnNAS ARM64 base image and decompress it when needed.
+4. Run `sudo ./renas -b orange-pi-5-ultra -k 6.18.y`.
 5. Upload the DTB, patch log, and generated image artifacts.
 
-Because the official FnNAS ARM64 base image is distributed from the vendor
-download page, the workflow does not hard-code a direct image URL.  Start it with
-`base_image_url` only when you have a stable direct download URL.
+By default the workflow uses the official FnNAS Rock 5B RK3588 base image:
+
+```text
+https://iso.liveupdate.fnnas.com/arm/trim/1.1.31/rock-5b/fnos_Mainland-PE_arm_1.1.31_rock-5b_1353.img.gz
+```
+
+Start the workflow manually with `base_image_url` only when you want to override
+that base image.
 
 ## Most Likely Debug Points
 
