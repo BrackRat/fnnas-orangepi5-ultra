@@ -195,7 +195,7 @@ The workflow in `.github/workflows/build-fnnas-orangepi5ultra.yml` can:
 By default the workflow uses the official FnNAS Rock 5B RK3588 base image:
 
 ```text
-https://iso.liveupdate.fnnas.com/arm/trim/1.1.31/rock-5b/fnos_Mainland-PE_arm_1.1.31_rock-5b_1353.img.gz
+http://thunder.liveupdate.fnnas.com:8080/arm/trim/1.1.31/rock-5b/fnos_Mainland-PE_arm_1.1.31_rock-5b_1353.img.gz
 ```
 
 Start the workflow manually with `base_image_url` only when you want to override

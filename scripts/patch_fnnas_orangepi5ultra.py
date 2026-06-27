@@ -22,7 +22,7 @@ ID_RE = re.compile(r"^(\s*)([A-Za-z]*)(\d+)(\s*)$")
 
 
 def split_fields(line: str) -> tuple[str | None, list[str]]:
-    for delimiter in ("|", ",", ":", "\t"):
+    for delimiter in ("|", ":", "\t", ","):
         if delimiter in line:
             return delimiter, line.split(delimiter)
 
