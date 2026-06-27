@@ -97,7 +97,7 @@ jobs:
       - name: List generated files
         if: always()
         run: |
-          find build work -maxdepth 4 -type f \
+          find build work -maxdepth 6 -type f \
             \( -name "*.dtb" -o -name "*.img" -o -name "*.img.xz" -o -name "*.log" \) \
             -print
 
@@ -116,5 +116,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: fnnas-orangepi-5-ultra-image
-          path: work/fnnas/out/*
+          path: |
+            work/fnnas/out/*
+            work/fnnas/fnnas/out/*
           if-no-files-found: error
