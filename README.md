@@ -8,7 +8,7 @@ The important moving pieces are:
 - Orange Pi BSP kernel branch: `orange-pi-6.1-rk35xx`
 - Device tree output: `rk3588-orangepi-5-ultra.dtb`
 - FnNAS packaging project: `https://github.com/ophub/fnnas.git`
-- FnNAS board id to add: `orange-pi-5-ultra`
+- FnNAS board id to add: `orangepi-5-ultra`
 - FnNAS kernel tag used for packaging: `6.18.y`
 
 ## Quick Start
@@ -37,7 +37,7 @@ Put the downloaded `.img` or `.img.xz` under `work/fnnas/fnnas-arm64/`, then run
 
 ```bash
 cd work/fnnas
-sudo ./renas -b orange-pi-5-ultra -k 6.18.y
+sudo ./renas -b orangepi-5-ultra -k 6.18.y
 ```
 
 The packaged image is written to `work/fnnas/out/`.
@@ -115,7 +115,18 @@ Ultra entry changes:
 - `FDTFILE` to the same style as the 5 Plus row, usually
   `rk3588-orangepi-5-ultra.dtb`
 - `MODEL` to `Orange-Pi-5-Ultra`
-- `BOARD` to `orange-pi-5-ultra`
+- `BOARD` to `orangepi-5-ultra`
+
+ophub's Rockchip image builder also writes bootloader files from:
+
+```text
+make-fnnas/u-boot/rockchip/<BOARD>/
+```
+
+Because upstream currently has `orangepi-5-plus` but not `orangepi-5-ultra`,
+this workflow patches `renas` to copy `orangepi-5-plus` bootloader files to
+`orangepi-5-ultra` after dependency download. This is a bring-up fallback, not a
+hardware-validated native Orange Pi 5 Ultra bootloader.
 
 The script also copies the generated DTB beside the existing 5 Plus DTB if it can
 find that file.  If it cannot infer the upstream location, it copies to:
@@ -152,7 +163,7 @@ name starts with `fnos_arm_` and ends with `.img` or `.img.xz`.
 
 ```bash
 cd work/fnnas
-sudo ./renas -b orange-pi-5-ultra -k 6.18.y
+sudo ./renas -b orangepi-5-ultra -k 6.18.y
 ```
 
 Generated images are under:
@@ -189,7 +200,7 @@ The workflow in `.github/workflows/build-fnnas-orangepi5ultra.yml` can:
 1. Build the Orange Pi 5 Ultra DTB.
 2. Clone and patch the FnNAS packaging tree.
 3. Download an official FnNAS ARM64 base image and decompress it when needed.
-4. Run `sudo ./renas -b orange-pi-5-ultra -k 6.18.y`.
+4. Run `sudo ./renas -b orangepi-5-ultra -k 6.18.y`.
 5. Upload the DTB, patch log, and generated image artifacts.
 
 By default the workflow uses the official FnNAS Rock 5B RK3588 base image:

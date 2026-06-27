@@ -92,7 +92,7 @@ jobs:
         working-directory: work/fnnas
         env:
           PACKAGE_KERNEL_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.kernel_tag || '6.18.y' }}
-        run: sudo ./renas -b orange-pi-5-ultra -k "${PACKAGE_KERNEL_TAG}"
+        run: sudo ./renas -b orangepi-5-ultra -k "${PACKAGE_KERNEL_TAG}"
 
       - name: List generated files
         if: always()
@@ -110,6 +110,7 @@ jobs:
             build/dtb/rk3588-orangepi-5-ultra.dtb
             work/dtbs.log
             work/model_database.patch.log
+            work/renas.patch.log
           if-no-files-found: warn
 
       - name: Upload packaged FnNAS image

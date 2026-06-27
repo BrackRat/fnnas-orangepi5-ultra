@@ -31,6 +31,7 @@ if [[ ! -f "${MODEL_DB}" ]]; then
 fi
 
 python3 "${ROOT_DIR}/scripts/patch_fnnas_orangepi5ultra.py" "${MODEL_DB}" | tee "${WORK_DIR}/model_database.patch.log"
+python3 "${ROOT_DIR}/scripts/patch_renas_orangepi5ultra.py" "${FNNAS_DIR}/renas" | tee "${WORK_DIR}/renas.patch.log"
 
 mapfile -t plus_locations < <(find "${FNNAS_DIR}" -type f -name "${PLUS_DTB}" | sort)
 
@@ -51,4 +52,4 @@ else
   echo "  ${fallback_rockchip_dir}/${ULTRA_DTB}"
 fi
 
-grep -n "orange-pi-5-plus\|orange-pi-5-ultra" "${MODEL_DB}"
+grep -n "orangepi-5-plus\|orangepi-5-ultra\|orange-pi-5-plus\|orange-pi-5-ultra" "${MODEL_DB}"

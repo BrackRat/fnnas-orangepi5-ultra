@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 PLUS_BOARDS = ("orangepi-5-plus", "orange-pi-5-plus")
-ULTRA_BOARD = "orange-pi-5-ultra"
+ULTRA_BOARD = "orangepi-5-ultra"
 PLUS_MODEL = "Orange-Pi-5-Plus"
 ULTRA_MODEL = "Orange-Pi-5-Ultra"
 PLUS_DTB_BASENAME = "rk3588-orangepi-5-plus.dtb"
