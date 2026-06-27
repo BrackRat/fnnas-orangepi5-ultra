@@ -55,10 +55,13 @@ jobs:
           KERNEL_REF: ${{ inputs.kernel_ref }}
         run: bash scripts/build-dtb.sh
 
+      - name: Build Orange Pi 5 Ultra U-Boot
+        run: bash scripts/build-uboot.sh
+
       - name: Prepare FnNAS packaging tree
         env:
           FNNAS_REF: ${{ inputs.fnnas_ref }}
-        run: bash scripts/prepare-fnnas.sh build/dtb/rk3588-orangepi-5-ultra.dtb
+        run: bash scripts/prepare-fnnas.sh build/dtb/rk3588-orangepi-5-ultra.dtb build/u-boot/orangepi-5-ultra
 
       - name: Install FnNAS packaging dependencies
         run: |
@@ -108,9 +111,11 @@ jobs:
           name: orangepi-5-ultra-dtb-and-logs
           path: |
             build/dtb/rk3588-orangepi-5-ultra.dtb
+            build/u-boot/orangepi-5-ultra/*
             work/dtbs.log
+            work/u-boot.log
             work/model_database.patch.log
-            work/renas.patch.log
+            work/uboot.patch.log
           if-no-files-found: warn
 
       - name: Upload packaged FnNAS image

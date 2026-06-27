@@ -5,3 +5,4 @@ work/
 *.zip
 *.log
 __pycache__/
+scripts/patch_renas_orangepi5ultra.py

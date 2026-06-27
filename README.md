@@ -7,6 +7,8 @@ The important moving pieces are:
 
 - Orange Pi BSP kernel branch: `orange-pi-6.1-rk35xx`
 - Device tree output: `rk3588-orangepi-5-ultra.dtb`
+- Orange Pi U-Boot branch: `v2017.09-rk3588`
+- Orange Pi U-Boot config: `orangepi_5_ultra_defconfig`
 - FnNAS packaging project: `https://github.com/ophub/fnnas.git`
 - FnNAS board id to add: `orangepi-5-ultra`
 - FnNAS kernel tag used for packaging: `6.18.y`
@@ -21,6 +23,7 @@ sudo apt install -y \
   u-boot-tools wget xz-utils zip unzip python3
 
 bash scripts/build-dtb.sh
+bash scripts/build-uboot.sh
 bash scripts/prepare-fnnas.sh build/dtb/rk3588-orangepi-5-ultra.dtb
 ```
 
@@ -117,16 +120,48 @@ Ultra entry changes:
 - `MODEL` to `Orange-Pi-5-Ultra`
 - `BOARD` to `orangepi-5-ultra`
 
-ophub's Rockchip image builder also writes bootloader files from:
+Build the Orange Pi 5 Ultra bootloader before preparing the FnNAS tree:
+
+```bash
+bash scripts/build-uboot.sh
+```
+
+This script clones the official Orange Pi U-Boot tree:
+
+```text
+https://github.com/orangepi-xunlong/u-boot-orangepi.git
+```
+
+with branch:
+
+```text
+v2017.09-rk3588
+```
+
+It builds the official Orange Pi 5 Ultra U-Boot config:
+
+```text
+orangepi_5_ultra_defconfig
+```
+
+and writes:
+
+```text
+build/u-boot/orangepi-5-ultra/idbloader.img
+build/u-boot/orangepi-5-ultra/u-boot.itb
+```
+
+ophub's Rockchip image builder writes bootloader files from:
 
 ```text
 make-fnnas/u-boot/rockchip/<BOARD>/
 ```
 
-Because upstream currently has `orangepi-5-plus` but not `orangepi-5-ultra`,
-this workflow patches `renas` to copy `orangepi-5-plus` bootloader files to
-`orangepi-5-ultra` after dependency download. This is a bring-up fallback, not a
-hardware-validated native Orange Pi 5 Ultra bootloader.
+The prepare script copies the official Orange Pi 5 Ultra U-Boot output into:
+
+```text
+work/fnnas/make-fnnas/u-boot/rockchip/orangepi-5-ultra/
+```
 
 The script also copies the generated DTB beside the existing 5 Plus DTB if it can
 find that file.  If it cannot infer the upstream location, it copies to:

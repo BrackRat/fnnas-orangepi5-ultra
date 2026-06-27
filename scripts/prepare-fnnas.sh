@@ -7,12 +7,19 @@ FNNAS_REPO="${FNNAS_REPO:-https://github.com/ophub/fnnas.git}"
 FNNAS_REF="${FNNAS_REF:-main}"
 FNNAS_DIR="${FNNAS_DIR:-${WORK_DIR}/fnnas}"
 DTB_PATH="${1:-${ROOT_DIR}/build/dtb/rk3588-orangepi-5-ultra.dtb}"
+UBOOT_SOURCE_DIR="${2:-${ROOT_DIR}/build/u-boot/orangepi-5-ultra}"
 MODEL_DB="${FNNAS_DIR}/make-fnnas/fnnas-files/common-files/etc/model_database.conf"
 ULTRA_DTB="rk3588-orangepi-5-ultra.dtb"
 PLUS_DTB="rk3588-orangepi-5-plus.dtb"
+ULTRA_UBOOT_TARGET="${FNNAS_DIR}/make-fnnas/u-boot/rockchip/orangepi-5-ultra"
 
 if [[ ! -f "${DTB_PATH}" ]]; then
   echo "DTB not found: ${DTB_PATH}" >&2
+  exit 1
+fi
+
+if [[ ! -s "${UBOOT_SOURCE_DIR}/idbloader.img" || ! -s "${UBOOT_SOURCE_DIR}/u-boot.itb" ]]; then
+  echo "Orange Pi 5 Ultra u-boot files not found in: ${UBOOT_SOURCE_DIR}" >&2
   exit 1
 fi
 
@@ -31,7 +38,11 @@ if [[ ! -f "${MODEL_DB}" ]]; then
 fi
 
 python3 "${ROOT_DIR}/scripts/patch_fnnas_orangepi5ultra.py" "${MODEL_DB}" | tee "${WORK_DIR}/model_database.patch.log"
-python3 "${ROOT_DIR}/scripts/patch_renas_orangepi5ultra.py" "${FNNAS_DIR}/renas" | tee "${WORK_DIR}/renas.patch.log"
+
+mkdir -p "${ULTRA_UBOOT_TARGET}"
+cp "${UBOOT_SOURCE_DIR}/idbloader.img" "${ULTRA_UBOOT_TARGET}/idbloader.img"
+cp "${UBOOT_SOURCE_DIR}/u-boot.itb" "${ULTRA_UBOOT_TARGET}/u-boot.itb"
+ls -lh "${ULTRA_UBOOT_TARGET}" | tee "${WORK_DIR}/uboot.patch.log"
 
 mapfile -t plus_locations < <(find "${FNNAS_DIR}" -type f -name "${PLUS_DTB}" | sort)
 
