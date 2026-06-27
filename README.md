@@ -149,6 +149,10 @@ some warnings into build-stopping errors. The script sets `KCFLAGS=-Wno-error`
 for CI reproducibility while keeping the official Orange Pi source, defconfig,
 and Rockchip `rkbin` inputs unchanged.
 
+Orange Pi's RK3588 `spl-blobs` flow generates `idbloader.img` from the RK3588
+DDR blob listed in `RK3588MINIALL.ini` plus `spl/u-boot-spl.bin`, matching the
+official `orangepi-build` post-processing logic.
+
 and writes:
 
 ```text

@@ -38,8 +38,17 @@ export KCFLAGS="${KCFLAGS:--Wno-error}"
 ./make.sh orangepi_5_ultra CROSS_COMPILE=aarch64-linux-gnu- 2>&1 | tee "${WORK_DIR}/u-boot.log"
 
 idbloader="$(find . -maxdepth 1 -type f -name 'idbloader.img' -print -quit)"
-if [[ -z "${idbloader}" ]]; then
-  idbloader="$(find . -maxdepth 1 -type f -name '*idbloader*.img' -print -quit)"
+if [[ -z "${idbloader}" && -s "spl/u-boot-spl.bin" ]]; then
+  ddr_blob="$(
+    awk -F= '/^Path1=bin\/rk35\/rk3588_ddr/ { print $2; exit }' \
+      "${RKBIN_DIR}/RKBOOT/RK3588MINIALL.ini"
+  )"
+  if [[ -z "${ddr_blob}" || ! -s "${RKBIN_DIR}/${ddr_blob}" ]]; then
+    echo "Cannot find RK3588 DDR blob from RK3588MINIALL.ini" >&2
+    exit 1
+  fi
+  tools/mkimage -n rk3588 -T rksd -d "${RKBIN_DIR}/${ddr_blob}:spl/u-boot-spl.bin" idbloader.img
+  idbloader="./idbloader.img"
 fi
 
 if [[ -z "${idbloader}" || ! -s "${idbloader}" ]]; then
