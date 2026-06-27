@@ -144,6 +144,11 @@ It builds the official Orange Pi 5 Ultra U-Boot config:
 orangepi_5_ultra_defconfig
 ```
 
+The official RK3588 U-Boot branch is old enough that modern Ubuntu GCC may turn
+some warnings into build-stopping errors. The script sets `KCFLAGS=-Wno-error`
+for CI reproducibility while keeping the official Orange Pi source, defconfig,
+and Rockchip `rkbin` inputs unchanged.
+
 and writes:
 
 ```text

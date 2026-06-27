@@ -34,6 +34,7 @@ if ! command -v python2 >/dev/null 2>&1; then
 fi
 
 cd "${UBOOT_DIR}"
+export KCFLAGS="${KCFLAGS:--Wno-error}"
 ./make.sh orangepi_5_ultra CROSS_COMPILE=aarch64-linux-gnu- 2>&1 | tee "${WORK_DIR}/u-boot.log"
 
 idbloader="$(find . -maxdepth 1 -type f -name 'idbloader.img' -print -quit)"
