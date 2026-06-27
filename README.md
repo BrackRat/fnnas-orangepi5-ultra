@@ -18,7 +18,7 @@ sudo apt update
 sudo apt install -y \
   git make gcc bison flex libssl-dev bc \
   gcc-aarch64-linux-gnu device-tree-compiler \
-  wget xz-utils zip unzip python3
+  u-boot-tools wget xz-utils zip unzip python3
 
 bash scripts/build-dtb.sh
 bash scripts/prepare-fnnas.sh build/dtb/rk3588-orangepi-5-ultra.dtb
@@ -51,7 +51,7 @@ sudo apt update
 sudo apt install -y \
   git make gcc bison flex libssl-dev bc \
   gcc-aarch64-linux-gnu device-tree-compiler \
-  wget xz-utils zip unzip python3
+  u-boot-tools wget xz-utils zip unzip python3
 ```
 
 ## Step 2: Build Orange Pi 5 Ultra DTB

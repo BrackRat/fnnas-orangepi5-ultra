@@ -1,6 +1,13 @@
 name: Build FnNAS Orange Pi 5 Ultra
 
 on:
+  push:
+    branches:
+      - master
+    paths:
+      - ".github/workflows/build-fnnas-orangepi5ultra.yml"
+      - "scripts/**"
+      - "README.md"
   workflow_dispatch:
     inputs:
       base_image_url:
@@ -38,7 +45,7 @@ jobs:
           sudo apt install -y \
             git make gcc bison flex libssl-dev bc \
             gcc-aarch64-linux-gnu device-tree-compiler \
-            wget xz-utils zip unzip python3
+            u-boot-tools wget xz-utils zip unzip python3
 
       - name: Build Orange Pi 5 Ultra DTB
         env:
@@ -55,14 +62,14 @@ jobs:
           sudo apt install -y $(cat work/fnnas/make-fnnas/script/ubuntu2404-make-fnnas-depends)
 
       - name: Download FnNAS ARM64 base image
-        if: ${{ inputs.base_image_url != '' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.base_image_url != '' }}
         run: |
           mkdir -p work/fnnas/fnnas-arm64
           filename="$(basename "${{ inputs.base_image_url }}")"
           wget -O "work/fnnas/fnnas-arm64/${filename}" "${{ inputs.base_image_url }}"
 
       - name: Package FnNAS image
-        if: ${{ inputs.base_image_url != '' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.base_image_url != '' }}
         working-directory: work/fnnas
         run: sudo ./renas -b orange-pi-5-ultra -k "${{ inputs.kernel_tag }}"
 
@@ -85,7 +92,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Upload packaged FnNAS image
-        if: ${{ inputs.base_image_url != '' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.base_image_url != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: fnnas-orangepi-5-ultra-image
