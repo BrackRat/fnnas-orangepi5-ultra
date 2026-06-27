@@ -1,0 +1,93 @@
+name: Build FnNAS Orange Pi 5 Ultra
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_image_url:
+        description: "Optional direct URL for the official FnNAS ARM64 .img or .img.xz base image"
+        required: false
+        type: string
+      kernel_ref:
+        description: "Orange Pi BSP kernel branch or tag"
+        required: true
+        default: "orange-pi-6.1-rk35xx"
+        type: string
+      fnnas_ref:
+        description: "ophub/fnnas branch, tag, or commit"
+        required: true
+        default: "main"
+        type: string
+      kernel_tag:
+        description: "FnNAS kernel tag passed to ./renas -k"
+        required: true
+        default: "6.18.y"
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+
+    steps:
+      - name: Checkout workflow repository
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            git make gcc bison flex libssl-dev bc \
+            gcc-aarch64-linux-gnu device-tree-compiler \
+            wget xz-utils zip unzip python3
+
+      - name: Build Orange Pi 5 Ultra DTB
+        env:
+          KERNEL_REF: ${{ inputs.kernel_ref }}
+        run: bash scripts/build-dtb.sh
+
+      - name: Prepare FnNAS packaging tree
+        env:
+          FNNAS_REF: ${{ inputs.fnnas_ref }}
+        run: bash scripts/prepare-fnnas.sh build/dtb/rk3588-orangepi-5-ultra.dtb
+
+      - name: Install FnNAS packaging dependencies
+        run: |
+          sudo apt install -y $(cat work/fnnas/make-fnnas/script/ubuntu2404-make-fnnas-depends)
+
+      - name: Download FnNAS ARM64 base image
+        if: ${{ inputs.base_image_url != '' }}
+        run: |
+          mkdir -p work/fnnas/fnnas-arm64
+          filename="$(basename "${{ inputs.base_image_url }}")"
+          wget -O "work/fnnas/fnnas-arm64/${filename}" "${{ inputs.base_image_url }}"
+
+      - name: Package FnNAS image
+        if: ${{ inputs.base_image_url != '' }}
+        working-directory: work/fnnas
+        run: sudo ./renas -b orange-pi-5-ultra -k "${{ inputs.kernel_tag }}"
+
+      - name: List generated files
+        if: always()
+        run: |
+          find build work -maxdepth 4 -type f \
+            \( -name "*.dtb" -o -name "*.img" -o -name "*.img.xz" -o -name "*.log" \) \
+            -print
+
+      - name: Upload DTB and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: orangepi-5-ultra-dtb-and-logs
+          path: |
+            build/dtb/rk3588-orangepi-5-ultra.dtb
+            work/dtbs.log
+            work/model_database.patch.log
+          if-no-files-found: warn
+
+      - name: Upload packaged FnNAS image
+        if: ${{ inputs.base_image_url != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: fnnas-orangepi-5-ultra-image
+          path: work/fnnas/out/*
+          if-no-files-found: error
