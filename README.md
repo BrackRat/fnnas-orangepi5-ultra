@@ -153,6 +153,10 @@ Orange Pi's RK3588 `spl-blobs` flow generates `idbloader.img` from the RK3588
 DDR blob listed in `RK3588MINIALL.ini` plus `spl/u-boot-spl.bin`, matching the
 official `orangepi-build` post-processing logic.
 
+The Orange Pi U-Boot `make.sh` leaves the FIT payload as `uboot.img`; the script
+copies that file to `u-boot.itb` because `ophub/fnnas` expects the Rockchip
+second-stage payload under that name.
+
 and writes:
 
 ```text

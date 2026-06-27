@@ -57,6 +57,10 @@ if [[ -z "${idbloader}" || ! -s "${idbloader}" ]]; then
   exit 1
 fi
 
+if [[ ! -s u-boot.itb && -s uboot.img ]]; then
+  cp uboot.img u-boot.itb
+fi
+
 if [[ ! -s u-boot.itb ]]; then
   echo "Orange Pi 5 Ultra u-boot.itb was not generated" >&2
   exit 1
