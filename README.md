@@ -109,10 +109,11 @@ Then it patches:
 work/fnnas/make-fnnas/fnnas-files/common-files/etc/model_database.conf
 ```
 
-using the `orange-pi-5-plus` entry as the template.  The generated Orange Pi 5
+using the Orange Pi 5 Plus entry as the template.  The generated Orange Pi 5
 Ultra entry changes:
 
-- `FDTFILE` to `rockchip/rk3588-orangepi-5-ultra.dtb`
+- `FDTFILE` to the same style as the 5 Plus row, usually
+  `rk3588-orangepi-5-ultra.dtb`
 - `MODEL` to `Orange-Pi-5-Ultra`
 - `BOARD` to `orange-pi-5-ultra`
 
@@ -120,6 +121,7 @@ The script also copies the generated DTB beside the existing 5 Plus DTB if it ca
 find that file.  If it cannot infer the upstream location, it copies to:
 
 ```text
+work/fnnas/make-fnnas/fnnas-files/common-files/boot/dtb/rk3588-orangepi-5-ultra.dtb
 work/fnnas/make-fnnas/fnnas-files/common-files/boot/dtb/rockchip/rk3588-orangepi-5-ultra.dtb
 ```
 

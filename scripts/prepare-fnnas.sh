@@ -41,10 +41,14 @@ if [[ "${#plus_locations[@]}" -gt 0 ]]; then
     echo "Copied DTB to ${target_dir}/${ULTRA_DTB}"
   done
 else
-  fallback_dir="${FNNAS_DIR}/make-fnnas/fnnas-files/common-files/boot/dtb/rockchip"
-  mkdir -p "${fallback_dir}"
+  fallback_dir="${FNNAS_DIR}/make-fnnas/fnnas-files/common-files/boot/dtb"
+  fallback_rockchip_dir="${fallback_dir}/rockchip"
+  mkdir -p "${fallback_dir}" "${fallback_rockchip_dir}"
   cp "${DTB_PATH}" "${fallback_dir}/${ULTRA_DTB}"
-  echo "5 Plus DTB location not found; copied DTB to fallback ${fallback_dir}/${ULTRA_DTB}"
+  cp "${DTB_PATH}" "${fallback_rockchip_dir}/${ULTRA_DTB}"
+  echo "5 Plus DTB location not found; copied DTB to fallbacks:"
+  echo "  ${fallback_dir}/${ULTRA_DTB}"
+  echo "  ${fallback_rockchip_dir}/${ULTRA_DTB}"
 fi
 
 grep -n "orange-pi-5-plus\|orange-pi-5-ultra" "${MODEL_DB}"
