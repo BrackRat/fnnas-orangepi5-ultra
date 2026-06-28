@@ -27,6 +27,21 @@ on:
         required: true
         default: "main"
         type: string
+      fnnas_repo:
+        description: "FnNAS packaging repository"
+        required: true
+        default: "https://github.com/ophub/fnnas.git"
+        type: string
+      uboot_repo:
+        description: "Optional u-boot repository to use for packaging instead of the freshly built local files"
+        required: false
+        default: ""
+        type: string
+      uboot_ref:
+        description: "u-boot branch, tag, or commit when uboot_repo is set"
+        required: false
+        default: "main"
+        type: string
       kernel_tag:
         description: "FnNAS kernel tag passed to ./renas -k"
         required: true
@@ -60,7 +75,10 @@ jobs:
 
       - name: Prepare FnNAS packaging tree
         env:
+          FNNAS_REPO: ${{ github.event_name == 'workflow_dispatch' && inputs.fnnas_repo || 'https://github.com/ophub/fnnas.git' }}
           FNNAS_REF: ${{ inputs.fnnas_ref }}
+          FNNAS_UBOOT_REPO: ${{ github.event_name == 'workflow_dispatch' && inputs.uboot_repo || '' }}
+          FNNAS_UBOOT_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.uboot_ref || 'main' }}
         run: bash scripts/prepare-fnnas.sh build/dtb/rk3588-orangepi-5-ultra.dtb build/u-boot/orangepi-5-ultra
 
       - name: Prepare upstream PR artifacts
