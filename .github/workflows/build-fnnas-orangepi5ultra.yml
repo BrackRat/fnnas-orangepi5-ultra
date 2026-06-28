@@ -63,6 +63,19 @@ jobs:
           FNNAS_REF: ${{ inputs.fnnas_ref }}
         run: bash scripts/prepare-fnnas.sh build/dtb/rk3588-orangepi-5-ultra.dtb build/u-boot/orangepi-5-ultra
 
+      - name: Prepare upstream PR artifacts
+        env:
+          KERNEL_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.kernel_ref || 'orange-pi-6.1-rk35xx' }}
+          FNNAS_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.fnnas_ref || 'main' }}
+        run: bash scripts/prepare-pr-artifacts.sh build/dtb/rk3588-orangepi-5-ultra.dtb build/u-boot/orangepi-5-ultra
+
+      - name: Upload upstream PR artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: orangepi-5-ultra-upstream-pr-artifacts
+          path: build/pr-artifacts/**
+          if-no-files-found: error
+
       - name: Install FnNAS packaging dependencies
         run: |
           sudo apt install -y $(cat work/fnnas/make-fnnas/script/ubuntu2404-make-fnnas-depends)

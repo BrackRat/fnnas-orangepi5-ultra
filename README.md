@@ -25,6 +25,7 @@ sudo apt install -y \
 bash scripts/build-dtb.sh
 bash scripts/build-uboot.sh
 bash scripts/prepare-fnnas.sh build/dtb/rk3588-orangepi-5-ultra.dtb
+bash scripts/prepare-pr-artifacts.sh build/dtb/rk3588-orangepi-5-ultra.dtb build/u-boot/orangepi-5-ultra
 ```
 
 Download the official ARM64 base image from the FnNAS download page:
@@ -247,9 +248,30 @@ The workflow in `.github/workflows/build-fnnas-orangepi5ultra.yml` can:
 
 1. Build the Orange Pi 5 Ultra DTB.
 2. Clone and patch the FnNAS packaging tree.
-3. Download an official FnNAS ARM64 base image and decompress it when needed.
-4. Run `sudo ./renas -b orangepi-5-ultra -k 6.18.y`.
-5. Upload the DTB, patch log, and generated image artifacts.
+3. Prepare upstream PR artifacts for `ophub/u-boot` and `ophub/fnnas`.
+4. Download an official FnNAS ARM64 base image and decompress it when needed.
+5. Run `sudo ./renas -b orangepi-5-ultra -k 6.18.y`.
+6. Upload the DTB, patch log, upstream PR artifacts, and generated image artifacts.
+
+The PR artifact upload is named:
+
+```text
+orangepi-5-ultra-upstream-pr-artifacts
+```
+
+It contains:
+
+```text
+ophub-u-boot/u-boot/rockchip/orangepi-5-ultra/idbloader.img
+ophub-u-boot/u-boot/rockchip/orangepi-5-ultra/u-boot.itb
+ophub-u-boot/PR-BODY.md
+ophub-fnnas/model_database.patch
+ophub-fnnas/model_database.row
+ophub-fnnas/rk3588-orangepi-5-ultra.dtb
+ophub-fnnas/PR-BODY.md
+SOURCE-MANIFEST.md
+SHA256SUMS
+```
 
 By default the workflow uses the official FnNAS Rock 5B RK3588 base image:
 
